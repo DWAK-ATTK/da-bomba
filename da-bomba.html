@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>da-bomba</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+
+		<style type="text/css">
+			* {
+				box-sizing: border-box;
+			}
+
+			BODY {
+				margin: 0px;
+				padding: 0px;
+
+				box-sizing: border-box;
+			}
+
+			.game-container {
+				position: absolute;
+				box-sizing: border-box;
+
+				display: grid;
+				grid-template-columns: 2em 25em 1fr 2em;
+				grid-template-rows: 7em 1fr 3em;
+				grid-template-areas: 
+					"header header header header"
+					". sidebar main ."
+					"footer footer footer footer";
+
+				align-items: center;
+				justify-items: center;
+				gap: .5em;
+
+				width: 100%;
+				height: 100%;
+			}
+
+
+			.game-board-container {
+				grid-area: main;
+
+				box-sizing: border-box;
+				border: 1px solid #008080;
+				border-radius: 7px;
+				
+				width: 100%;
+				height: 100%;
+
+				padding: 7px;
+			}
+
+
+			.game-board {
+				grid-area: main;
+				display:grid;
+				grid-template-columns: repeat(10, 3em);
+				grid-template-rows: repeat(20, 3em);
+				justify-content: center;
+				align-content: center;
+				gap: 2px;
+
+				background-color: #cccccc;
+				background: rgb(133,121,132);
+				background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+
+				width: 100%;
+				height: 100%;
+			}
+
+			.game-cell {
+				cursor: pointer;
+				font-size: xx-large;
+
+				border-radius: 7px;;
+
+				display: grid;
+				align-items: center;
+				justify-items: center;
+				background-color:rgb(255, 217, 249);
+				color: #ffffff;
+			}
+
+			.revealed {
+				background-color: darkslateblue;
+			}
+
+
+
+			.sidebar {
+				grid-area: sidebar;
+				display: grid;
+				grid-template-rows: 15em 1fr;
+				justify-items: center;
+				align-items:start;
+
+				border: 1px solid crimson;
+				border-radius: 7px;
+
+				text-align: center;
+
+				width: 100%;
+				height: 100%;
+			}
+
+
+			.banner-message {
+				position: absolute;
+				top: 2em;
+				left: 0px;
+				width: 100%;
+				height: 2em;
+
+				display: grid;
+				align-items: center;
+				justify-items: center;
+
+				background-color: #00000080;
+				color: #dede80;
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: 9em;
+			}
+
+			.banner-message:hover {
+				background-color: #000000dd;
+			}
+
+			.you-lose {
+				color: #de0000;
+			}
+
+			.try-again {
+				color: #ffffff;
+				font-size: 0.4em;
+			}
+
+			.sidebar .button {
+				align-self: start;
+				color: #808080 !important;
+				font-size: 1.5em;
+				padding: 10px;
+				width: 90%;
+				height: 2em;
+
+				border: 1px solid #de0000;
+			}
+
+			.remaining-bomb-count-panel {
+				font-size: 96pt;
+				font-weight: bold;
+				text-align: center;
+				padding-top: 10px;
+				padding-bottom:10px;
+			}
+
+			.header {
+				grid-area: header;
+				background-color: cornflowerblue;
+
+				display:grid;
+				align-content: center;
+				align-items: center;
+				justify-content: center;
+
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: 6em;
+
+				width: 100%;
+				height: 100%;
+			}
+
+			.footer {
+				grid-area: footer;
+
+				display: grid;
+				grid-template-columns: 3.25em 1fr 2.25em;
+				grid-template-rows: 1fr;
+				grid-template-areas: ". footer-content .";
+				align-content: center;
+				align-items: center;
+
+				background-color: rgb(53, 53, 53);
+				font-family: 'Architects Daughter', cursive;
+				
+				width: 100%;
+				height: 100%;
+			}
+
+			.footer-content {
+				grid-area: footer-content;
+
+				color: #eeeeee;
+			}
+
+			.d-none {
+				display:none;
+			}
+		</style>
+	</head>
+
+
+
+	<body>
+		<div class="game-container">
+			<div class="header"><span>da-bomba</span></div>
+			<div class="banner-message d-none">
+				<span class="banner-message-text"></span>
+			</div>
+			<div class="sidebar">
+				<div class="remaining-bomb-count-panel">
+					<!--<span>Remaining Bombs:</span> --><span class="remaining-bomb-count">0</span>
+				</div>
+				<div class="try-again button">New Game</div>
+			</div>
+			<div class="game-board-container">
+				<div id="game-board" class="game-board"></div>
+			</div>
+			<div class="footer"><span class="footer-content">da-bomba &copy; 2021-2022 - dwak and daughters</span></div>
+		</div>
+
+		<script type="text/javascript">
+			var GameBoard = {
+				Consts: {
+					ANY: 'ANY',
+					BOMB: 'BOMB',
+					CLEAR: 'CLEAR',
+
+					STATE_IDLE: 'IDLE',
+					STATE_PLAYING: 'PLAYING',
+					STATE_ENDED: 'ENDED',
+
+					END_STATE_UNKNOWN: '?',
+					END_STATE_WON: 'WON',
+					END_STATE_LOST: 'LOST'
+				},
+
+				Width: 5,
+				Height: 7,
+				Cells: [],
+
+				GameState: 'IDLE',
+				EndState: '?',
+
+
+				CreateBoard: function(width, height) {
+					if (null == width || null == height) { throw "width and height are required."; }
+					this.Width = width;
+					this.Height = height;
+					var board = document.getElementById('game-board');
+					board.innerHTML = '';
+
+					for(var x = 0; x < height; x++) {
+						this.Cells[x] = new Array();
+					}
+
+					for(var y = 0; y < height; y++) {
+						for(var x = 0; x < width; x++) {
+							var cell = document.createElement('div');
+							cell.classList.add('game-cell');
+							cell.style.gridRow = y+1;
+							cell.style.gridColumn = x+1;
+							cell.setAttribute('data-position', `${x},${y}`);
+							cell.setAttribute('data-position-x', x);
+							cell.setAttribute('data-position-y', y);
+
+							cell.addEventListener('click', this.CellClickHandler);
+							cell.addEventListener('contextmenu', this.CellClickHandler);
+
+							var text = '';
+							switch (randomInt(0, 10)) {
+								case 0:
+									//text = '💣';
+									this.Cells[y][x] = {type: this.Consts.BOMB, neighbors: 0, isFlagged: false, isRevealed: false};
+									break;
+
+								default:
+									text = '';
+									//text = `<span style="font-size: 8pt;"">${x},${y}</span>`;
+									this.Cells[y][x] = {type: this.Consts.CLEAR, neighbors: 0, isFlagged: false, isRevealed: false};
+									break;
+							}
+							cell.innerHTML = text;
+
+							board.append(cell);
+						}
+					}
+					document.querySelector('.remaining-bomb-count').innerText = this.GetBombCount();
+
+					console.log(this.Cells);
+
+					this.FinalizeBoard();
+				},
+
+
+				FinalizeBoard: function() {
+					for(var y = 0; y < this.Height; y++) {
+						for(var x = 0; x < this.Width; x++) {
+							var neighborBombs = this.ScanNeighbors({x: x, y: y}, this.Consts.BOMB);
+							if(this.Cells[y][x].type != this.Consts.BOMB && 0 < neighborBombs.length) {
+								this.Cells[y][x].neighbors = neighborBombs.length;
+							}
+						}
+					}
+				},
+
+
+				CellClickHandler: function(event) {
+					event.preventDefault();
+					var x = parseInt(this.getAttribute('data-position-x'));
+					var y = parseInt(this.getAttribute('data-position-y'));
+
+					//	revealed cells should have no further user interaction.
+					if(GameBoard.IsRevealed(x, y)) { return; }
+
+					//	RMB
+					if (3 == event.which) {
+						var cellElement = document.querySelector(`[data-position="${x},${y}"]`);
+						GameBoard.ToggleFlag(x, y);
+						document.querySelector('.remaining-bomb-count').innerText = (GameBoard.GetBombCount() - GameBoard.GetFlagCount());
+						if (GameBoard.IsFlagged(x, y)) {
+							cellElement.innerText = '🚩';
+							if (GameBoard.GetBombCount() == GameBoard.GetFlagCount()) {
+								GameBoard.YouWin();
+								return;
+							}
+						} else {
+							cellElement.innerText = '';
+						}
+
+						return;
+					}
+
+					//	LMB
+					//	LMB on flagged ccells should have no effect.
+					if(GameBoard.IsFlagged(x, y)) { return; }
+
+					this.classList.add('revealed');
+					GameBoard.Cells[y][x].isRevealed = true;
+
+					if(GameBoard.IsBomb(x, y)) {
+						GameBoard.YouLose();
+						return;
+					} 
+
+					if(GameBoard.IsClear(x, y)) {
+						this.innerHTML = GameBoard.Cells[y][x].neighbors;
+						if(0 == GameBoard.Cells[y][x].neighbors) {
+							GameBoard.FloodReveal(x, y);
+						}
+					}
+				},
+
+
+				FloodReveal: function(x, y) {
+					var neighbors = GameBoard.ScanNeighbors({x:x, y:y}, this.Consts.CLEAR, 0, false, false);
+					neighbors.push({x:x, y:y});
+					
+					var lastCount = neighbors.length;
+					while(true) {
+						var newNeighbors = [];
+						neighbors.forEach(n => newNeighbors.push.apply(newNeighbors, GameBoard.ScanNeighbors(n, this.Consts.CLEAR, 0, false, false)));
+						newNeighbors = onlyUniqueCells(newNeighbors);
+						if(0 == newNeighbors.length) { break; }
+
+						neighbors.push.apply(neighbors, newNeighbors);
+						neighbors = onlyUniqueCells(neighbors);
+
+						if(neighbors.length == lastCount) { break; }
+						lastCount = neighbors.length;
+					}
+
+					//	This is all the "ZERO" neighbors.
+					neighbors.forEach(n => this.RevealCell(n.x, n.y));
+					
+					//	Now we need all the "non-zero" neighbors.
+					var unrevealed = [];
+					neighbors.forEach(n => unrevealed.push.apply(unrevealed, GameBoard.ScanNeighbors(n, this.Consts.ANY, null, false, false)));
+					unrevealed = onlyUniqueCells(unrevealed);
+					unrevealed.forEach(n => this.RevealCell(n.x, n.y));
+
+					function onlyUniqueCells(cells) {
+						var seen = {};
+						return cells.filter(function(cell) {
+							var cellID = `${cell.x}x${cell.y}`;
+							return seen.hasOwnProperty(cellID) ? false : (seen[cellID] = true);
+						});
+					}
+				},
+
+
+
+				RevealCell: function(x, y) {
+					var cellElement = document.querySelector(`[data-position="${x},${y}"]`);
+					GameBoard.Cells[y][x].isRevealed = true;
+					cellElement.innerHTML = GameBoard.Cells[y][x].neighbors;
+					cellElement.classList.add('revealed');
+				},
+
+
+
+				YouLose: function() {
+					this.GameState = this.Consts.STATE_ENDED;
+					this.GameState = this.Consts.END_STATE_LOST;
+
+					for(var y = 0; y < this.Height; y++) {
+						for(var x = 0; x < this.Width; x++) {
+							if (this.IsBomb(x, y)) {
+								document.querySelector(`[data-position="${x},${y}"]`).innerText = '💣';
+							}
+						}
+					}
+
+					var banner = document.querySelector('.banner-message');
+					banner.innerHTML = '<span class="banner-message-text">YOU LOSE</span><div class="try-again">try again</div>';
+					banner.classList.add('you-lose');
+					banner.classList.remove('d-none');
+				},
+
+
+				YouWin: function() {
+					this.GameState = this.Consts.STATE_ENDED;
+					this.GameState = this.Consts.END_STATE_LOST;
+
+					for(var y = 0; y < this.Height; y++) {
+						for(var x = 0; x < this.Width; x++) {
+							if (this.IsBomb(x, y)) {
+								document.querySelector(`[data-position="${x},${y}"]`).innerText = '💣';
+							}
+						}
+					}
+
+					var banner = document.querySelector('.banner-message');
+					banner.innerHTML = '<span class="banner-message-text">YOU WIN</span><div class="try-again">play again</div>';
+					banner.classList.remove('d-none');
+				},
+
+
+				ScanNeighbors: function(cell, cellType, neighborCount, isRevealed, isFlagged) {
+					//	cell: { x, y }
+					//	scan the neighbors for bombs.
+					var results = new Array();
+					var log = `${cell.x},${cell.y}:  `;
+
+					var neighbors = [];
+					//	NW
+					if (0 < cell.x && 0 < cell.y) {
+						neighbors.push({x:cell.x-1, y:cell.y-1});
+					}
+
+					//	N
+					if (0 < cell.y) {
+						neighbors.push({x:cell.x, y:cell.y-1});
+					}
+
+					//	NE
+					if (cell.x < this.Width-1 && 0 < cell.y) {
+						neighbors.push({x:cell.x+1, y:cell.y-1});
+					}
+
+					//	SW
+					if (0 < cell.x && cell.y < this.Height-1) {
+						neighbors.push({x:cell.x-1, y:cell.y+1});
+					}
+
+					//	S
+					if (cell.y < this.Height-1) {
+						neighbors.push({x:cell.x, y:cell.y+1});
+					}
+
+					//	SE
+					if (cell.x < this.Width-1 && cell.y < this.Height-1) {
+						neighbors.push({x:cell.x+1, y:cell.y+1});
+					}
+
+					//	W
+					if (0 < cell.x) {
+						neighbors.push({x:cell.x-1, y:cell.y});
+					}
+
+					//	E
+					if (cell.x < this.Width - 1) {
+						neighbors.push({x:cell.x+1, y:cell.y});
+					}
+
+					results = neighbors.filter(n => cellType === this.Consts.ANY || this.Cells[n.y][n.x].type === cellType);
+					if(null != neighborCount || undefined != neighborCount) {
+						results = results.filter(n => this.Cells[n.y][n.x].neighbors == neighborCount);
+					}
+					if(null != isRevealed || undefined != isRevealed) {
+						results = results.filter(n => this.Cells[n.y][n.x].isRevealed == isRevealed);
+					}
+					if(null != isFlagged || undefined != isFlagged) {
+						results = results.filter(n => this.Cells[n.y][n.x].isFlagged == isFlagged);
+					}
+
+					console.log(log);
+
+					return results;
+				},
+
+
+				GetBombCount: function() {
+					var count = 0;
+					this.Cells.forEach(row => row.forEach(cell => count += (cell.type === this.Consts.BOMB ? 1 : 0)));
+					return count;
+				},
+
+
+				GetFlagCount: function() {
+					var count = 0;
+					this.Cells.forEach(row => row.forEach(cell => count += (cell.isFlagged ? 1 : 0)));
+					return count;
+				},
+
+
+
+				CheckType: function(x, y) {
+					return this.Cells[y][x].type;
+				},
+
+				IsBomb: function(x, y) {
+					return this.Consts.BOMB === this.CheckType(x, y);
+				},
+
+				IsClear: function(x, y) {
+					return this.Consts.CLEAR === this.CheckType(x, y);
+				},
+
+				IsFlagged: function(x, y) {
+					return this.Cells[y][x].isFlagged;
+				},
+
+				IsRevealed: function(x, y) {
+					return this.Cells[y][x].isRevealed;
+				},
+
+
+				ToggleFlag: function(x, y) {
+					this.Cells[y][x].isFlagged = !this.Cells[y][x].isFlagged;
+				}
+
+				
+			};
+
+			GameBoard.CreateBoard(10, 20);
+			document.querySelectorAll('.try-again').forEach(element => {
+				element.addEventListener('click', () => GameBoard.CreateBoard(10, 20));
+			});
+
+
+			function randomInt(min, max) {
+				min = Math.ceil(min);
+				max = Math.floor(max);
+				return Math.floor(Math.random() * (max - min) + min);
+			}
+		</script>
+	</body>
+</html>
