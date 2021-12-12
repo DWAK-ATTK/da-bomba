@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>da-bomba</title>
+		<meta id="version" version="0.9.1">
 
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +19,7 @@
 				padding: 0px;
 
 				box-sizing: border-box;
+				overflow: hidden;
 			}
 
 			.game-container {
@@ -44,29 +46,31 @@
 			.game-board-container {
 				grid-area: main;
 
-				box-sizing: border-box;
+				background: linear-gradient(25deg, rgb(0, 251, 255) 0%, rgb(255, 174, 0) 100%);
 				border: 1px solid #008080;
 				border-radius: 7px;
 				
 				width: 100%;
 				height: 100%;
 
-				padding: 7px;
+				_padding: 7px;
+
+				overflow: auto;
 			}
 
 
 			.game-board {
 				grid-area: main;
 				display:grid;
-				grid-template-columns: repeat(10, 3em);
-				grid-template-rows: repeat(20, 3em);
+				
 				justify-content: center;
 				align-content: center;
 				gap: 2px;
 
 				background-color: #cccccc;
 				background: rgb(133,121,132);
-				background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+				
+				background: linear-gradient(-45deg, rgba(182, 34, 195, 0.75) 0%, rgba(59, 45, 253, 0.377) 100%);
 
 				width: 100%;
 				height: 100%;
@@ -94,13 +98,14 @@
 			.sidebar {
 				grid-area: sidebar;
 				display: grid;
-				grid-template-rows: 15em 1fr;
+				grid-template-rows: 15em auto;
 				justify-items: center;
 				align-items:start;
 
 				border: 1px solid crimson;
 				border-radius: 7px;
 
+				font-family: 'Bebas Neue', sans-serif;
 				text-align: center;
 
 				width: 100%;
@@ -136,6 +141,7 @@
 			.try-again {
 				color: #ffffff;
 				font-size: 0.4em;
+				cursor: pointer;
 			}
 
 			.sidebar .button {
@@ -149,6 +155,11 @@
 				border: 1px solid #de0000;
 			}
 
+			.sidebar .button:hover {
+				background-color: #ffdddd;
+				color: #404040;
+			}
+
 			.remaining-bomb-count-panel {
 				font-size: 96pt;
 				font-weight: bold;
@@ -160,6 +171,8 @@
 			.header {
 				grid-area: header;
 				background-color: cornflowerblue;
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARAAAABwAgMAAACr58doAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAMUExURX6n8GSV7ZS28qbC9J/2PhIAAAAJcEhZcwAACxIAAAsSAdLdfvwAAARWSURBVFjD7Zm7jeQ4EIaLjaXTzp4xyuGgTYLKoIxiEhdFJ3F+m4LGuBA2nw1hjO6jKD7EEh9i9wHnrIABBiL1qfTzZ7HIBv0fXL8h/zMEz0AIQFa6SaShDQFzVboJxDYEV4god1OodBMCUA8F/xBNCG6QckcaZBOiNkhtqFC2II5Rk1a1IOQh5Y6yGQl6SFEUkk1NvCRlUXAQ70OUbvokMIrKCt1yLFUgahVbktR0HsLlWz9UkqiF4SBYhGx4BKV7IGwMVGvoT0BOmDBAVAnSNmEWkhpFgW97A2IiUHX/tCFknn0bghDM/AZEBGn1yxCTh9Tbo2MgL/kkgcBA7/sEgiSvQwhiywmIyKY2Eho6IBJzvbETEqbr/uNRxGx1IikVIIA9kBi3h0w6STMnIBQmq3eVnExe7oREQziImLAXsrOm66wmpfshbJKgEN2Qw3S1NU0vRITEvjEsqxOyS2EbBF6AEMgUItaVtxOypvVUk49Ek3G5lZ6XERJmsR+dYT8612UpZBQ0ttSsBI0+WWuaMKEWA8l/EA5SaFYMR8euNQ3FQJZCciP5TWpWlivhupqaRtIHXNan10DmkrbC3k42CChjISJQGoahXBwkm/Enu4UJOWt9FQ3rvHOyKDGukPv6NXcoJmvQh02TKc5U+EALWUYHyadIykCMpN4qm6LL8mX+biXDIY/EfrQiGSKxkM+Hh+REUakmzjf44a0CVlL48bQjXIBsdWWEbL6hQW0U77Lvz192cLLKkiS5hzjf2AzlIUZTuD6/Nl1zypo4xB7ifGO+I0KMKLfx52OThC2xsCqgtnUhtmy+CVvXdU4aUea//nksh3xgZ4RWfuuxx9vVUMXR2Zzy+bwfIHbWS3AC7CHWN2ISu5eZUH59Pg+ZididCLG+ITmpXSQmlMfydUunuD5UHBFifUPDhHsIfD7m8QCBYiRuPzKlb7ssMN4ZxKRkSu7sfEKJJQPkduUQDCsmHx3nmxxkZpC4TAVI6ptwgYfcDxDzT3ouAMw3R8g8HiB86QbmmyNkWRiEQLMigo/WOQgr+QNEn4ZgLKxejwQlP+XgvilDpO+yq1i9sMw3Zcjg57cakEN0HQIBEo5hIAPB0xCvwBBmcXAsVDUJEKGjjMAhzDcHyOggUh9cESGlraJikIEqEFWIxN+/+pUYRRkCDcjoa4IzEC4sRmHvtjkctPVDLm45t1mkG0IJRNiDgyZElCG2Ve1qqtMQHTSZbWvs8AJk9JlAvgJxY3z1hcWQgcgWBH0kN9auOiBO2XmRaSBdkK3pcv/Tpg+hc5ChCVFwucH1ti5tbNPdASETBozHSm0H0U2ICWWGWWbgPRCC8XI/3j4+U4NovF7/7oLk6mWU2R9T+GavASns/NjgtCLJQojpWk6PGyV/Ms1lrEPUt2wsigXPhzy9hMxvQtkjVQhJmT/iVqmKNZusJyD5H8wofW0V4rZ0mQsTEWsjfPqqDk4v5A2E1v8CGgs9uL6ZmCUAAAAASUVORK5CYII=);
+    			background-repeat: no-repeat;
 
 				display:grid;
 				align-content: center;
@@ -177,9 +190,9 @@
 				grid-area: footer;
 
 				display: grid;
-				grid-template-columns: 3.25em 1fr 2.25em;
+				grid-template-columns: 3.25em 1fr 1fr 2.25em;
 				grid-template-rows: 1fr;
-				grid-template-areas: ". footer-content .";
+				grid-template-areas: ". footer-content footer-version .";
 				align-content: center;
 				align-items: center;
 
@@ -196,33 +209,71 @@
 				color: #eeeeee;
 			}
 
+			.footer-version {
+				grid-area: footer-version;
+				color: #ffffcc;
+				font-family: 'Bebas Neue', sans-serif;
+				justify-self: end;
+			}
+
 			.d-none {
 				display:none;
 			}
 		</style>
+
+		<style type="text/css" id="gameboard-css">
+			.game-board {
+				grid-template-columns: repeat(10, 3em);
+				grid-template-rows: repeat(10, 3em);
+			}
+		</style>
 	</head>
-
-
 
 	<body>
 		<div class="game-container">
 			<div class="header"><span>da-bomba</span></div>
 			<div class="banner-message d-none">
 				<span class="banner-message-text"></span>
+				<div class="try-again">try again</div>
 			</div>
 			<div class="sidebar">
 				<div class="remaining-bomb-count-panel">
 					<!--<span>Remaining Bombs:</span> --><span class="remaining-bomb-count">0</span>
 				</div>
-				<div class="try-again button">New Game</div>
+				<div class="try-again button" data-size-width="10" data-size-height="10">New Game: small</div>
+				<div class="try-again button" data-size-width="15" data-size-height="10">New Game: medium</div>
+				<div class="try-again button" data-size-width="20" data-size-height="20">New Game: large</div>
 			</div>
 			<div class="game-board-container">
 				<div id="game-board" class="game-board"></div>
 			</div>
-			<div class="footer"><span class="footer-content">da-bomba &copy; 2021-2022 - dwak and daughters</span></div>
+			<div class="footer">
+				<span class="footer-content">da-bomba &copy; 2021-2022 - dwak and daughters</span>
+				<span id="footer-version" class="footer-version"></span>
+			</div>
 		</div>
 
 		<script type="text/javascript">
+			var thisVersion = document.getElementById('version').getAttribute('version');
+			document.getElementById('footer-version').innerText = `version ${thisVersion}`;
+
+			async function getLatestVersion() {
+				//	check for latest version
+				await fetch('https://api.github.com/repos/DWAK-ATTK/da-bomba/releases/latest')
+					.then(lResponse => lResponse.json())
+					.then(async function(lResponse) {
+						await fetch(lResponse.url)
+							.then(vResponse => vResponse.json())
+							.then(function(vResponse) {
+								var latestVersion = vResponse.tag_name;
+								if(thisVersion != latestVersion) {
+									document.getElementById('footer-version').innerText = `a new version is available ${thisVersion} => ${latestVersion}`;
+								}
+							});
+					});
+			}
+			getLatestVersion();
+
 			var GameBoard = {
 				Consts: {
 					ANY: 'ANY',
@@ -241,18 +292,28 @@
 				Width: 5,
 				Height: 7,
 				Cells: [],
+				BombChance: 5,
 
 				GameState: 'IDLE',
 				EndState: '?',
 
 
 				CreateBoard: function(width, height) {
-					if (null == width || null == height) { throw "width and height are required."; }
+					if (null == width) {width = this.Width;}
+					if (null == height) {height = this.Height;}
 					this.Width = width;
 					this.Height = height;
 					var board = document.getElementById('game-board');
 					board.innerHTML = '';
 
+					//	fixup .game-board class rule
+					var stylesheet = document.getElementById('gameboard-css');
+					stylesheet.innerText = `.game-board {grid-template-columns: repeat(${width}, 3em);grid-template-rows: repeat(${height}, 3em);}`;
+
+					//	set up rest of board
+					this.GameState = this.Consts.STATE_PLAYING;
+
+					this.Cells = new Array();
 					for(var x = 0; x < height; x++) {
 						this.Cells[x] = new Array();
 					}
@@ -271,7 +332,7 @@
 							cell.addEventListener('contextmenu', this.CellClickHandler);
 
 							var text = '';
-							switch (randomInt(0, 10)) {
+							switch (randomInt(0, this.BombChance)) {
 								case 0:
 									//text = '💣';
 									this.Cells[y][x] = {type: this.Consts.BOMB, neighbors: 0, isFlagged: false, isRevealed: false};
@@ -313,6 +374,8 @@
 					var x = parseInt(this.getAttribute('data-position-x'));
 					var y = parseInt(this.getAttribute('data-position-y'));
 
+					if(GameBoard.GameState == GameBoard.Consts.STATE_ENDED) { return; }
+
 					//	revealed cells should have no further user interaction.
 					if(GameBoard.IsRevealed(x, y)) { return; }
 
@@ -323,7 +386,7 @@
 						document.querySelector('.remaining-bomb-count').innerText = (GameBoard.GetBombCount() - GameBoard.GetFlagCount());
 						if (GameBoard.IsFlagged(x, y)) {
 							cellElement.innerText = '🚩';
-							if (GameBoard.GetBombCount() == GameBoard.GetFlagCount()) {
+							if (GameBoard.GetBombCount() == GameBoard.GetFlaggedBombCount()) {
 								GameBoard.YouWin();
 								return;
 							}
@@ -347,7 +410,7 @@
 					} 
 
 					if(GameBoard.IsClear(x, y)) {
-						this.innerHTML = GameBoard.Cells[y][x].neighbors;
+						GameBoard.RevealCell(x, y);
 						if(0 == GameBoard.Cells[y][x].neighbors) {
 							GameBoard.FloodReveal(x, y);
 						}
@@ -395,8 +458,12 @@
 
 				RevealCell: function(x, y) {
 					var cellElement = document.querySelector(`[data-position="${x},${y}"]`);
+					var neighbors = GameBoard.Cells[y][x].neighbors;
+
 					GameBoard.Cells[y][x].isRevealed = true;
-					cellElement.innerHTML = GameBoard.Cells[y][x].neighbors;
+					if (0 < neighbors) {
+						cellElement.innerHTML = neighbors;
+					}
 					cellElement.classList.add('revealed');
 				},
 
@@ -404,7 +471,7 @@
 
 				YouLose: function() {
 					this.GameState = this.Consts.STATE_ENDED;
-					this.GameState = this.Consts.END_STATE_LOST;
+					this.EndState = this.Consts.END_STATE_LOST;
 
 					for(var y = 0; y < this.Height; y++) {
 						for(var x = 0; x < this.Width; x++) {
@@ -415,7 +482,11 @@
 					}
 
 					var banner = document.querySelector('.banner-message');
-					banner.innerHTML = '<span class="banner-message-text">YOU LOSE</span><div class="try-again">try again</div>';
+					var bannerText = banner.querySelector('.banner-message-text');
+					var button = banner.querySelector('.try-again');
+
+					bannerText.innerText = 'YOU LOSE ☹️';
+					button.innerText = 'try again';
 					banner.classList.add('you-lose');
 					banner.classList.remove('d-none');
 				},
@@ -423,7 +494,7 @@
 
 				YouWin: function() {
 					this.GameState = this.Consts.STATE_ENDED;
-					this.GameState = this.Consts.END_STATE_LOST;
+					this.EndState = this.Consts.END_STATE_WON;
 
 					for(var y = 0; y < this.Height; y++) {
 						for(var x = 0; x < this.Width; x++) {
@@ -434,7 +505,11 @@
 					}
 
 					var banner = document.querySelector('.banner-message');
-					banner.innerHTML = '<span class="banner-message-text">YOU WIN</span><div class="try-again">play again</div>';
+					var bannerText = banner.querySelector('.banner-message-text');
+					var button = banner.querySelector('.try-again');
+
+					bannerText.innerText = 'YOU WIN 😊';
+					button.innerText = 'play again';
 					banner.classList.remove('d-none');
 				},
 
@@ -517,6 +592,13 @@
 				},
 
 
+				GetFlaggedBombCount: function() {
+					var count = 0;
+					this.Cells.forEach(row => row.forEach(cell => count += ((cell.type === this.Consts.BOMB && cell.isFlagged) ? 1 : 0)));
+					return count;
+				},
+
+
 
 				CheckType: function(x, y) {
 					return this.Cells[y][x].type;
@@ -546,9 +628,15 @@
 				
 			};
 
-			GameBoard.CreateBoard(10, 20);
+			GameBoard.CreateBoard(10, 10);
 			document.querySelectorAll('.try-again').forEach(element => {
-				element.addEventListener('click', () => GameBoard.CreateBoard(10, 20));
+				element.addEventListener('click', () => {
+					document.querySelector('.banner-message').classList.add('d-none');
+
+					var width = element.getAttribute('data-size-width');
+					var height = element.getAttribute('data-size-height');
+					GameBoard.CreateBoard(width, height);
+				});
 			});
 
 
